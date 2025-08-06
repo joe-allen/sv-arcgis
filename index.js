@@ -1,1 +1,1 @@
-// console.log('Thanks for installing sv-arcgis');
+// https://www.npmjs.com/package/sv-arcgis
