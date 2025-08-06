@@ -1,0 +1,40 @@
+{
+  "name": "sv-arcgis",
+  "version": "0.1.0-development",
+  "main": "index.js",
+  "bin": {
+    "sv-arcgis": "./bin/sv-arcgis-setup.js"
+  },
+  "scripts": {
+    "sematice-release": "semantic-release"
+  },
+  "keywords": [
+    "arcgis",
+    "sveltekit",
+    "svelte",
+    "cli",
+    "setup",
+    "scaffold",
+    "generator",
+    "esri",
+    "gis",
+    "mapping",
+    "geospatial",
+    "development",
+    "configuration",
+    "boilerplate",
+    "template"
+  ],
+  "author": "Joe Allen",
+  "license": "MIT",
+  "description": "a CLI tool that guides you through setting up a ArcGIS / SvelteKit development environment.",
+  "devDependencies": {
+    "semantic-release": "^24.2.7"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ]
+}
