@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const packageJsonPath = path.join(process.cwd(), 'package.json');
 
@@ -57,7 +58,6 @@ let envExamplePath;
 // BASE
 // APP_NAME
 // SECURITY_CLASSIFICATION
-// MAP_COMPONENTS
 // CALCITE
 // API_KEY
 // CLIENT_ID
@@ -279,23 +279,6 @@ const securityClassification = await prompts([
 ], { onCancel });
 console.log("");
 
-const mapComponents = await prompts([
-  {
-    type: 'select',
-    name: 'MAP_COMPONENTS',
-    message: 'Do you want to use Map Components?',
-    choices: [
-      { title: 'Yes', value: true },
-      { title: 'No', value: false }
-    ],
-    validate: value => {
-      global.mapComponentsIsNull = value.length === 0;
-      return true;
-    }
-  }
-], { onCancel });
-console.log("");
-
 const calcite = await prompts([
   {
     type: 'select',
@@ -345,7 +328,7 @@ if (hasPnpmLock) {
 // Install packages with loader
 const initPromises = [];
 
-if (mapComponents.MAP_COMPONENTS === true && calcite.CALCITE === true) {
+if (calcite.CALCITE === true) {
   console.log("📦 Installing ArcGIS Core, Map Components, and Calcite Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
@@ -360,39 +343,19 @@ if (mapComponents.MAP_COMPONENTS === true && calcite.CALCITE === true) {
     })
   );
 } else {
-  // Install just mapComponents?
-  if (mapComponents.MAP_COMPONENTS === true) {
-    console.log("📦 Installing ArcGIS Core and Map Components...");
-    initPromises.push(
-      new Promise((resolve, reject) => {
-        exec(\`\${packageManager} install @arcgis/core@4.31.6 @arcgis/map-components@4.31.6\`, (error, stdout, stderr) => {
-          if (error) {
-            console.log('error:', chalk.white.bgRed(error.message));
-            reject(error);
-          } else {
-            resolve();
-          }
-        });
-      })
-    );
-  }
-    
-  // Install just Calcite?
-  if (calcite.CALCITE === true) {
-    console.log("📦 Installing Calcite Components...");
-    initPromises.push(
-      new Promise((resolve, reject) => {
-        exec(\`\${packageManager} install @esri/calcite-components@2.13.0\`, (error, stdout, stderr) => {
-          if (error) {
-            console.log('error:', chalk.white.bgRed(error.message));
-            reject(error);
-          } else {
-            resolve();
-          }
-        });
-      })
-    );
-  }
+ console.log("📦 Installing ArcGIS Core and Map Components...");
+  initPromises.push(
+    new Promise((resolve, reject) => {
+      exec(\`\${packageManager} install @arcgis/core@4.31.6 @arcgis/map-components@4.31.6\`, (error, stdout, stderr) => {
+        if (error) {
+          console.log('error:', chalk.white.bgRed(error.message));
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    })
+  );
 }
 
 // Wait for all installations to complete
@@ -400,7 +363,7 @@ if (initPromises.length > 0) {
   try {
     await Promise.all(initPromises);
     console.log("");
-    console.log("✅ Package installation completed!");
+    console.log("✅ Packages installation completed");
     } catch (error) {
     console.log("");
     console.log("❌ Package installation failed:", error.message);
@@ -484,7 +447,7 @@ if (demo.DEMO === true) {
   </main>
 
   <style>
-    @import "https://js.arcgis.com/4.31/@arcgis/core/assets/esri/themes/dark/main.css";${calcite.CALCITE ? '\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
+    @import "https://js.arcgis.com/4.31/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
 
     :global(body:has(.e-demo)) {
       margin: 0;
@@ -622,7 +585,6 @@ const config = {
   ...webmapId,
   ...appId,
   ...securityClassification,
-  ...mapComponents,
   ...calcite
 }
 
@@ -712,26 +674,31 @@ packageJson.scripts.config = 'SUPPRESS_NO_CONFIG_WARNING=true node ./.config/ini
 // Write back to package.json
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
+// Install required dependencies for the config script
+console.log("📦 Installing required dependencies...");
+
+try {
+  if (packageManager === 'pnpm') {
+    execSync('pnpm add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
+  } else if (packageManager === 'yarn') {
+    execSync('yarn add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
+  } else {
+    execSync('npm install --save-dev chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
+  }
+  console.log("✅ Dependencies installed successfully");
+} catch (error) {
+  console.error("❌ Failed to install dependencies:", error.message);
+  process.exit(1);
+}
+
 console.log("✅ Added config script to package.json");
 console.log("");
 
-console.log("1️⃣  Please install required dependencies:");
+console.log("🚀 Now run:");
 if (packageManager === 'pnpm') {
-  console.log("   pnpm add chalk cross-env prompts");
-  console.log("");
-
-  console.log("2️⃣  Then run:");
-  console.log("   pnpm run config");
+  console.log("   `pnpm run config`");
 } else if (packageManager === 'yarn') {
-  console.log("   yarn add chalk cross-env prompts");
-  console.log("");
-
-  console.log("2️⃣  Then run:");
-  console.log("   yarn run config");
+  console.log("   `yarn run config`");
 } else {
-  console.log("   npm install --save chalk cross-env prompts");
-  console.log("");
-
-  console.log("2️⃣  Then run:");
-  console.log("   npm run config");
+  console.log("   `npm run config`");
 }
