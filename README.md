@@ -3,8 +3,7 @@
 - SvelteKit installed (`npx sv create [project_name]`)
 
 ## 🗜️ Setup
-
-1. Install sv-arcgis `npm i sv-arcgis`
+1. Install [sv-arcgis](https://www.npmjs.com/package/sv-arcgis) `npm i sv-arcgis`
 2. Run sv-arcgis `npx sv-arcgis`
 3. ⚠️ Follow instructions in terminal
 
