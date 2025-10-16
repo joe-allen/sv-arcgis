@@ -333,7 +333,7 @@ if (calcite.CALCITE === true) {
   console.log("📦 Installing ArcGIS Core, Map Components, and Calcite Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.33.12 @arcgis/map-components@4.33.12 @esri/calcite-components@2.13.0\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@4.33.14 @arcgis/map-components@4.33.24 @esri/calcite-components@3.3.3\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -347,7 +347,7 @@ if (calcite.CALCITE === true) {
  console.log("📦 Installing ArcGIS Core and Map Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.33.12 @arcgis/map-components@4.33.12\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@4.33.14 @arcgis/map-components@4.33.24\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -419,7 +419,7 @@ if (demo.DEMO === true) {
         import("@arcgis/map-components/dist/loader").then(
           ({ defineCustomElements }) => {
             defineCustomElements(window, {
-              resourcesUrl: "https://js.arcgis.com/map-components/4.33.12/assets",
+              resourcesUrl: "https://js.arcgis.com/map-components/4.33.24/assets",
             });
           }
         );
@@ -463,7 +463,7 @@ if (demo.DEMO === true) {
     </main>
 
     <style>
-      @import "https://js.arcgis.com/4.31/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
+      @import "https://js.arcgis.com/4.33/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
 
       :global(body:has(.e-demo)) {
         margin: 0;
@@ -594,7 +594,7 @@ if (demo.DEMO === true) {
       import("@arcgis/map-components/dist/loader").then(
         ({ defineCustomElements }) => {
           defineCustomElements(window, {
-            resourcesUrl: "https://js.arcgis.com/map-components/4.33.12/assets",
+            resourcesUrl: "https://js.arcgis.com/map-components/4.33.24/assets",
           });
         }
       );
@@ -637,7 +637,7 @@ if (demo.DEMO === true) {
     </main>
   
     <style>
-      @import "https://js.arcgis.com/4.31/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
+      @import "https://js.arcgis.com/4.33/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
   
       :global(body:has(.e-demo)) {
         margin: 0;

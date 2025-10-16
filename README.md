@@ -6,7 +6,7 @@
 ## 🗜️ Setup
 
 1. Install [sv-arcgis](https://www.npmjs.com/package/sv-arcgis) `npx sv-arcgis`
-2. ⚠️ Follow instructions in terminal
+2. Follow instructions in terminal 👍
 
 ## 📕 Notes
 
