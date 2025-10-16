@@ -1,37 +1,37 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
-const packageJsonPath = path.join(process.cwd(), 'package.json');
+const packageJsonPath = path.join(process.cwd(), "package.json");
 
 if (!fs.existsSync(packageJsonPath)) {
-  console.error('No package.json found in current directory');
+  console.error("No package.json found in current directory");
   process.exit(1);
 }
 
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
 // Detect package manager
-const hasPnpmLock = fs.existsSync(path.join(process.cwd(), 'pnpm-lock.yaml'));
-const hasYarnLock = fs.existsSync(path.join(process.cwd(), 'yarn.lock'));
+const hasPnpmLock = fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"));
+const hasYarnLock = fs.existsSync(path.join(process.cwd(), "yarn.lock"));
 
-let packageManager = 'npm';
+let packageManager = "npm";
 if (hasPnpmLock) {
-  packageManager = 'pnpm';
+  packageManager = "pnpm";
 } else if (hasYarnLock) {
-  packageManager = 'yarn';
+  packageManager = "yarn";
 }
 
 // Create config directory
-const configDirectory = path.join(process.cwd(), '.config');
+const configDirectory = path.join(process.cwd(), ".config");
 if (!fs.existsSync(configDirectory)) {
   fs.mkdirSync(configDirectory, { recursive: true });
   // console.log("✅ Created .config directory");
 }
 
 // Create init-sv-arcgis.js file
-const initConfigPath = path.join(configDirectory, 'init-sv-arcgis.js');
+const initConfigPath = path.join(configDirectory, "init-sv-arcgis.js");
 const initConfigContent = `#!/usr/bin/env node
 
 import fs from 'fs';
@@ -368,6 +368,8 @@ if (initPromises.length > 0) {
     } catch (error) {
     console.log("");
     console.log("❌ Package installation failed:", error.message);
+    console.log("");
+    console.log("❓ Do you already have one of these installed @arcgis/core, @arcgis/map-components, or @esri/calcite-components? This may be the issue. If you're comfortable with it, uninstall them, delete the node_modules folder, package-lock.json, and run this tool again.");
   }
 }
 
@@ -749,7 +751,7 @@ if (demo.DEMO === true) {
 
   fs.writeFileSync(demoPagePath, demoPageContent);
   if (isSvelte) {
-    console.log(\`✅ Created demo page at ./src/routes/arcgis/ArcGIS.svelte\`);
+    console.log(\`✅ Created demo page at ./src/lib/arcgis/ArcGIS.svelte\`);
   } else {
     console.log(\`✅ Created demo page at ./src/routes/arcgis/+page.svelte\`);
   }
@@ -878,7 +880,8 @@ console.log("✅ Created .config/init-sv-arcgis.js");
 
 // Add script
 if (!packageJson.scripts) packageJson.scripts = {};
-packageJson.scripts.config = 'SUPPRESS_NO_CONFIG_WARNING=true node ./.config/init-sv-arcgis.js';
+packageJson.scripts.config =
+  "SUPPRESS_NO_CONFIG_WARNING=true node ./.config/init-sv-arcgis.js";
 
 // Write back to package.json
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
@@ -887,12 +890,19 @@ fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 console.log("📦 Installing required dependencies...");
 
 try {
-  if (packageManager === 'pnpm') {
-    execSync('pnpm add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
-  } else if (packageManager === 'yarn') {
-    execSync('yarn add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
+  if (packageManager === "pnpm") {
+    execSync("pnpm add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0", {
+      stdio: "inherit",
+    });
+  } else if (packageManager === "yarn") {
+    execSync("yarn add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0", {
+      stdio: "inherit",
+    });
   } else {
-    execSync('npm install --save-dev chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
+    execSync(
+      "npm install --save-dev chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0",
+      { stdio: "inherit" }
+    );
   }
   console.log("✅ Dependencies installed successfully");
 } catch (error) {
@@ -904,9 +914,9 @@ console.log("✅ Added config script to package.json");
 console.log("");
 
 console.log("🚀 Now run:");
-if (packageManager === 'pnpm') {
+if (packageManager === "pnpm") {
   console.log("   `pnpm run config`");
-} else if (packageManager === 'yarn') {
+} else if (packageManager === "yarn") {
   console.log("   `yarn run config`");
 } else {
   console.log("   `npm run config`");
