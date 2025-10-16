@@ -1,11 +1,12 @@
 ## 🎬 Prereqs
 
-- SvelteKit installed (`npx sv create [project_name]`)
+- SvelteKit: `npx sv create [project_name]`
+- (Or Svelte: `npm create vite@latest`)
 
 ## 🗜️ Setup
-1. Install [sv-arcgis](https://www.npmjs.com/package/sv-arcgis) `npm i sv-arcgis`
-2. Run sv-arcgis `npx sv-arcgis`
-3. ⚠️ Follow instructions in terminal
+
+1. Install [sv-arcgis](https://www.npmjs.com/package/sv-arcgis) `npx sv-arcgis`
+2. ⚠️ Follow instructions in terminal
 
 ## 📕 Notes
 
@@ -15,10 +16,10 @@
 
 ## 🗺️ Roadmap
 
-- Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
-- Update to use determine if Svelte Vite app? (Demo would need to be different)
-- Create tests (see https://www.youtube.com/watch?v=Xk8yaN9_PZA)
 - Create CI / CD (w/ tests)
+- Create tests (see https://www.youtube.com/watch?v=Xk8yaN9_PZA)
+- Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
+- [x] Update to work Svelte / Vite app (not just Kit)? (Demo would need to be different)
 
 ## 🙏 Help
 
