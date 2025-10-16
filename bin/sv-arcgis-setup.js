@@ -759,7 +759,7 @@ if (demo.DEMO === true) {
   // Update root page
   const rootRouteDir = isSvelte ? path.join(process.cwd(), 'src') : path.join(process.cwd(), 'src', 'routes');
   const rootPagePath = isSvelte ? path.join(rootRouteDir, 'App.svelte') : path.join(rootRouteDir, '+page.svelte');
-  const rootPageUpdate = isSvelte ?  \`import ArcGIS from './lib/ArcGIS.svelte';\` : \`<p>Visit the <a href="arcgis">arcgis demo page</a> and view console.log output</p>\`;
+  const rootPageUpdate = isSvelte ?  \n\`import ArcGIS from './lib/ArcGIS.svelte';\` : \`<p>Visit the <a href="arcgis">arcgis demo page</a> and view console.log output</p>\`;
 
   // Read existing root page content and append the demo link
   if (fs.existsSync(rootPagePath) && isSvelteKit) {
