@@ -1,37 +1,37 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
-const packageJsonPath = path.join(process.cwd(), 'package.json');
+const packageJsonPath = path.join(process.cwd(), "package.json");
 
 if (!fs.existsSync(packageJsonPath)) {
-  console.error('No package.json found in current directory');
+  console.error("No package.json found in current directory");
   process.exit(1);
 }
 
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
 // Detect package manager
-const hasPnpmLock = fs.existsSync(path.join(process.cwd(), 'pnpm-lock.yaml'));
-const hasYarnLock = fs.existsSync(path.join(process.cwd(), 'yarn.lock'));
+const hasPnpmLock = fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"));
+const hasYarnLock = fs.existsSync(path.join(process.cwd(), "yarn.lock"));
 
-let packageManager = 'npm';
+let packageManager = "npm";
 if (hasPnpmLock) {
-  packageManager = 'pnpm';
+  packageManager = "pnpm";
 } else if (hasYarnLock) {
-  packageManager = 'yarn';
+  packageManager = "yarn";
 }
 
 // Create config directory
-const configDirectory = path.join(process.cwd(), '.config');
+const configDirectory = path.join(process.cwd(), ".config");
 if (!fs.existsSync(configDirectory)) {
   fs.mkdirSync(configDirectory, { recursive: true });
   // console.log("✅ Created .config directory");
 }
 
 // Create init-sv-arcgis.js file
-const initConfigPath = path.join(configDirectory, 'init-sv-arcgis.js');
+const initConfigPath = path.join(configDirectory, "init-sv-arcgis.js");
 const initConfigContent = `#!/usr/bin/env node
 
 import fs from 'fs';
@@ -71,10 +71,11 @@ const onCancel = () => {
 
 async function generateConfig() {
 
-  // Check if SvelteKit is installed
+  // Check if Svelte/SvelteKit is installed
+  const isSvelte = fs.existsSync(path.join(process.cwd(), 'src/App.svelte'));
   const isSvelteKit = fs.existsSync(path.join(process.cwd(), 'src/routes/+page.svelte'));
-  if (!isSvelteKit) {
-    console.log("🛑 This doesn\'t seem like a SvelteKit project.");
+  if (!isSvelte && !isSvelteKit) {
+    console.log("🛑 This doesn\'t seem like a Svelte/SvelteKit project.");
     console.log("🛑 Have you ran 'npx sv create ./' yet?");
     process.exit(1);
   }
@@ -216,7 +217,7 @@ const arcGisApiKey = await prompts([
   {
     type: 'text',
     name: 'ARC_GIS_API_KEY',
-    message: 'Enter your ArcGIS API key (optional)',
+    message: 'Enter your ArcGIS API key',
     validate: value => {
       global.arcGisApiKeyIsNull = value.length === 0;
       return true;
@@ -229,7 +230,7 @@ const arcGisClientId = await prompts([
   {
     type: 'text',
     name: 'ARC_GIS_CLIENT_ID',
-    message: 'Enter your ArcGIS Client ID (optional)',
+    message: 'Enter your ArcGIS Client ID',
     validate: value => {
       global.arcGisClientIdIsNull = value.length === 0;
       return true;
@@ -242,7 +243,7 @@ const arcGisClientSecret = await prompts([
   {
     type: 'text',
     name: 'ARC_GIS_CLIENT_SECRET',
-    message: 'Enter your ArcGIS Client Secret (optional)',
+    message: 'Enter your ArcGIS Client Secret',
     validate: value => {
       global.arcGisClientSecretIsNull = value.length === 0;
       return true;
@@ -332,7 +333,7 @@ if (calcite.CALCITE === true) {
   console.log("📦 Installing ArcGIS Core, Map Components, and Calcite Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.31.6 @arcgis/map-components@4.31.6 @esri/calcite-components@2.13.0\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@4.33.12 @arcgis/map-components@4.33.12 @esri/calcite-components@2.13.0\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -346,7 +347,7 @@ if (calcite.CALCITE === true) {
  console.log("📦 Installing ArcGIS Core and Map Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.31.6 @arcgis/map-components@4.31.6\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@4.33.12 @arcgis/map-components@4.33.12\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -367,213 +368,423 @@ if (initPromises.length > 0) {
     } catch (error) {
     console.log("");
     console.log("❌ Package installation failed:", error.message);
+    console.log("");
+    console.log("❓ Do you already have one of these installed @arcgis/core, @arcgis/map-components, or @esri/calcite-components? This may be the issue. If you're comfortable with it, uninstall them, delete the node_modules folder, package-lock.json, and run this tool again.");
   }
 }
 
 // Add demo page?
 if (demo.DEMO === true) {
-  // Create directory called 'arcgis' in './src/routes/'
-  const arcgisRouteDir = path.join(process.cwd(), 'src', 'routes', 'arcgis');
+  let arcgisRouteDir;
+  if (isSvelte) {
+    // console.log("📦 Svelte DEMO...");
+    // Create directory called 'arcgis' in './src/'
+
+    arcgisRouteDir = path.join(process.cwd(), 'src', 'lib');
+  } else if (isSvelteKit) {
+    console.log("📦 SvelteKit DEMO...");
+    // Create directory called 'arcgis' in './src/routes/'
+
+    arcgisRouteDir = path.join(process.cwd(), 'src', 'routes', 'arcgis');
+  }
+
   if (!fs.existsSync(arcgisRouteDir)) {
     fs.mkdirSync(arcgisRouteDir, { recursive: true });
   }
 
-  // Create a demo page within this directory called '+page.svelte'
-  const demoPagePath = path.join(arcgisRouteDir, '+page.svelte');
+  // Create a demo page within this directory
+  const demoPagePath = isSvelte ? path.join(arcgisRouteDir, 'ArcGIS.svelte') : path.join(arcgisRouteDir, '+page.svelte');
+  let demoPageContent;
   
-  const demoPageContent = \`<script lang="ts">
-    // config
-    import config from "$lib/config";
+  if (isSvelteKit) {
+    demoPageContent = \`<script lang="ts">
+      // config
+      import config from "$lib/config";
 
-    // sk
-    import { onMount } from "svelte";
-    import { browser } from "$app/environment";
-    import { env } from "$env/dynamic/public";
+      // sk
+      import { onMount } from "svelte";
+      import { browser } from "$app/environment";
+      import { env } from "$env/dynamic/public";
 
-    // variables
-    let mapWrap: HTMLDivElement | null = $state(null);
+      // variables
+      let mapWrap: HTMLDivElement | null = $state(null);
 
-    onMount(() => {
-      console.log("env", env);
-      console.log("config", config);
-      console.log("mapWrap", mapWrap);
-    });
+      onMount(() => {
+        console.log("env", env);
+        console.log("config", config);
+        console.log("mapWrap", mapWrap);
+      });
 
-    if (browser) {
+      if (browser) {
+        import("@arcgis/map-components/dist/loader").then(
+          ({ defineCustomElements }) => {
+            defineCustomElements(window, {
+              resourcesUrl: "https://js.arcgis.com/map-components/4.33.12/assets",
+            });
+          }
+        );
+      }
+    </script>
+
+    <svelte:head>
+      <title>🗺️ SV + ArcGIS Demo</title>
+    </svelte:head>
+
+    <main class="e-demo">
+      {#if config.SECURITY_CLASSIFICATION}
+        <div
+          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+        >
+          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+        </div>
+      {/if}
+      <div class="e-demo-container">
+        <div class="e-demo-header">
+          <h1>🗺️ SV + ArcGIS Demo</h1>
+        </div>
+        <div class="e-demo-map-wrap" bind:this={mapWrap}>
+          <arcgis-map item-id="05e015c5f0314db9a487a9b46cb37eca">
+            <arcgis-zoom position="top-left"></arcgis-zoom>
+          </arcgis-map>
+          {#if config.CALCITE}
+            <calcite-button href="/" appearance="solid" scale="m">
+              Go Home
+            </calcite-button>
+          {/if}
+        </div>
+      </div>
+      {#if config.SECURITY_CLASSIFICATION}
+        <div
+          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+        >
+          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+        </div>
+      {/if}
+    </main>
+
+    <style>
+      @import "https://js.arcgis.com/4.31/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
+
+      :global(body:has(.e-demo)) {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        background: #212121;
+      }
+
+      .e-demo {
+        display: grid;
+        grid-template-rows: 24px 1fr 24px;
+        height: 100vh;
+      }
+
+      .e-demo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .e-demo-header {
+        padding: 1rem;
+        color: #f1f1f1;
+
+        translate: 0 0;
+        transition: translate 1s ease-out;
+
+        @starting-style {
+          translate: 0 -4px;
+        }
+      }
+
+      .e-demo-map-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        width: 50vmax;
+        height: 100vh;
+        margin-inline: auto;
+        margin: 0;
+        padding: 0;
+        padding-block-end: 2rem;
+
+        & arcgis-map {
+          width: 100%;
+          height: 50vh;
+
+          opacity: 1;
+          transition: opacity 2s ease-out;
+
+          @starting-style {
+            opacity: 0;
+          }
+        }
+
+        & calcite-button {
+          align-self: center;
+        }
+      }
+
+      .e-demo-security-bar {
+        position: sticky;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        inset-block-start: 0;
+        height: 22px;
+        background-color: #000;
+        color: #fff;
+        margin: 0;
+        font-size: 14px;
+        z-index: 1;
+
+        &:not(:first-of-type) {
+          inset-block-end: 0;
+        }
+
+        &.e-demo-security-bar--classified {
+          color: #fff;
+          background-color: #723d9a;
+        }
+        &.e-demo-security-bar--confidential {
+          color: #fff;
+          background-color: #0033a0;
+        }
+        &.e-demo-security-bar--controlled_unclassified_information {
+          color: #fff;
+          background-color: #3d1e5a;
+        }
+        &.e-demo-security-bar--secret {
+          color: #fff;
+          background-color: #c8102e;
+        }
+        &.e-demo-security-bar--top_secret {
+          color: #000;
+          background-color: #ff671f;
+        }
+        &.e-demo-security-bar--top_secret_sensitive_compartment_information {
+          color: #000;
+          background-color: #f7ea48;
+        }
+        &.e-demo-security-bar--unclassified {
+          color: #fff;
+          background-color: #007a33;
+        }
+      }
+    </style>
+    \`;
+  }
+  
+  if (isSvelte) {
+    demoPageContent = \`<script>
+      // config
+      import config from "./config";
+  
+      // sk
+      import { onMount } from "svelte";
+  
+      // variables
+      let mapWrap = $state(null);
+  
+      onMount(() => {
+        console.log("config", config);
+        console.log("mapWrap", mapWrap);
+      });
+      
       import("@arcgis/map-components/dist/loader").then(
         ({ defineCustomElements }) => {
           defineCustomElements(window, {
-            resourcesUrl: "https://js.arcgis.com/map-components/4.31.6/assets",
+            resourcesUrl: "https://js.arcgis.com/map-components/4.33.12/assets",
           });
         }
       );
-    }
-  </script>
-
-  <svelte:head>
-    <title>🗺️ SV + ArcGIS Demo</title>
-  </svelte:head>
-
-  <main class="e-demo">
-    {#if config.SECURITY_CLASSIFICATION}
-      <div
-        class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
-      >
-        Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+    </script>
+  
+    <svelte:head>
+      <title>🗺️ SV + ArcGIS Demo</title>
+    </svelte:head>
+  
+    <main class="e-demo">
+      {#if config.SECURITY_CLASSIFICATION}
+        <div
+          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+        >
+          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+        </div>
+      {/if}
+      <div class="e-demo-container">
+        <div class="e-demo-header">
+          <h1>🗺️ SV + ArcGIS Demo</h1>
+        </div>
+        <div class="e-demo-map-wrap" bind:this={mapWrap}>
+          <arcgis-map item-id="05e015c5f0314db9a487a9b46cb37eca">
+            <arcgis-zoom position="top-left"></arcgis-zoom>
+          </arcgis-map>
+          {#if config.CALCITE}
+            <calcite-button href="/" appearance="solid" scale="m">
+              Go Home
+            </calcite-button>
+          {/if}
+        </div>
       </div>
-    {/if}
-    <div class="e-demo-container">
-      <div class="e-demo-header">
-        <h1>🗺️ SV + ArcGIS Demo</h1>
-      </div>
-      <div class="e-demo-map-wrap" bind:this={mapWrap}>
-        <arcgis-map item-id="05e015c5f0314db9a487a9b46cb37eca">
-          <arcgis-zoom position="top-left"></arcgis-zoom>
-        </arcgis-map>
-        {#if config.CALCITE}
-          <calcite-button href="/" appearance="solid" scale="m">
-            Go Home
-          </calcite-button>
-        {/if}
-      </div>
-    </div>
-    {#if config.SECURITY_CLASSIFICATION}
-      <div
-        class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
-      >
-        Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
-      </div>
-    {/if}
-  </main>
-
-  <style>
-    @import "https://js.arcgis.com/4.31/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
-
-    :global(body:has(.e-demo)) {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background: #212121;
-    }
-
-    .e-demo {
-      display: grid;
-      grid-template-rows: 24px 1fr 24px;
-      height: 100vh;
-    }
-
-    .e-demo-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .e-demo-header {
-      padding: 1rem;
-      color: #f1f1f1;
-
-      translate: 0 0;
-      transition: translate 1s ease-out;
-
-      @starting-style {
-        translate: 0 -4px;
-      }
-    }
-
-    .e-demo-map-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      width: 50vmax;
-      height: 100vh;
-      margin-inline: auto;
-      margin: 0;
-      padding: 0;
-      padding-block-end: 2rem;
-
-      & arcgis-map {
+      {#if config.SECURITY_CLASSIFICATION}
+        <div
+          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+        >
+          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+        </div>
+      {/if}
+    </main>
+  
+    <style>
+      @import "https://js.arcgis.com/4.31/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
+  
+      :global(body:has(.e-demo)) {
+        margin: 0;
+        padding: 0;
+        height: 100%;
         width: 100%;
-        height: 50vh;
-
-        opacity: 1;
-        transition: opacity 2s ease-out;
-
+        background: #212121;
+      }
+  
+      .e-demo {
+        display: grid;
+        grid-template-rows: 24px 1fr 24px;
+        height: 100vh;
+      }
+  
+      .e-demo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+  
+      .e-demo-header {
+        padding: 1rem;
+        color: #f1f1f1;
+  
+        translate: 0 0;
+        transition: translate 1s ease-out;
+  
         @starting-style {
-          opacity: 0;
+          translate: 0 -4px;
         }
       }
-
-      & calcite-button {
-        align-self: center;
+  
+      .e-demo-map-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        width: 50vmax;
+        height: 100vh;
+        margin-inline: auto;
+        margin: 0;
+        padding: 0;
+        padding-block-end: 2rem;
+  
+        & arcgis-map {
+          width: 100%;
+          height: 50vh;
+  
+          opacity: 1;
+          transition: opacity 2s ease-out;
+  
+          @starting-style {
+            opacity: 0;
+          }
+        }
+  
+        & calcite-button {
+          align-self: center;
+        }
       }
-    }
-
-    .e-demo-security-bar {
-      position: sticky;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      inset-block-start: 0;
-      height: 22px;
-      background-color: #000;
-      color: #fff;
-      margin: 0;
-      font-size: 14px;
-      z-index: 1;
-
-      &:not(:first-of-type) {
-        inset-block-end: 0;
-      }
-
-      &.e-demo-security-bar--classified {
+  
+      .e-demo-security-bar {
+        position: sticky;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        inset-block-start: 0;
+        height: 22px;
+        background-color: #000;
         color: #fff;
-        background-color: #723d9a;
+        margin: 0;
+        font-size: 14px;
+        z-index: 1;
+  
+        &:not(:first-of-type) {
+          inset-block-end: 0;
+        }
+  
+        &.e-demo-security-bar--classified {
+          color: #fff;
+          background-color: #723d9a;
+        }
+        &.e-demo-security-bar--confidential {
+          color: #fff;
+          background-color: #0033a0;
+        }
+        &.e-demo-security-bar--controlled_unclassified_information {
+          color: #fff;
+          background-color: #3d1e5a;
+        }
+        &.e-demo-security-bar--secret {
+          color: #fff;
+          background-color: #c8102e;
+        }
+        &.e-demo-security-bar--top_secret {
+          color: #000;
+          background-color: #ff671f;
+        }
+        &.e-demo-security-bar--top_secret_sensitive_compartment_information {
+          color: #000;
+          background-color: #f7ea48;
+        }
+        &.e-demo-security-bar--unclassified {
+          color: #fff;
+          background-color: #007a33;
+        }
       }
-      &.e-demo-security-bar--confidential {
-        color: #fff;
-        background-color: #0033a0;
-      }
-      &.e-demo-security-bar--controlled_unclassified_information {
-        color: #fff;
-        background-color: #3d1e5a;
-      }
-      &.e-demo-security-bar--secret {
-        color: #fff;
-        background-color: #c8102e;
-      }
-      &.e-demo-security-bar--top_secret {
-        color: #000;
-        background-color: #ff671f;
-      }
-      &.e-demo-security-bar--top_secret_sensitive_compartment_information {
-        color: #000;
-        background-color: #f7ea48;
-      }
-      &.e-demo-security-bar--unclassified {
-        color: #fff;
-        background-color: #007a33;
-      }
-    }
-  </style>
-  \`;
+    </style>
+    \`;
+  }
 
   fs.writeFileSync(demoPagePath, demoPageContent);
-  console.log(\`✅ Created demo page at ./src/routes/arcgis/+page.svelte\`);
-  
-  // Update root page with link to demo
-  const rootRouteDir = path.join(process.cwd(), 'src', 'routes');
-  const rootPagePath = path.join(rootRouteDir, '+page.svelte');
-  const rootPageUpdate = \`<p>Visit the <a href="arcgis">arcgis demo page</a> and view console.log output</p>\`;
-  
+  if (isSvelte) {
+    console.log(\`✅ Created demo page at ./src/lib/arcgis/ArcGIS.svelte\`);
+  } else {
+    console.log(\`✅ Created demo page at ./src/routes/arcgis/+page.svelte\`);
+  }
+
+  // Update root page
+  const rootRouteDir = isSvelte ? path.join(process.cwd(), 'src') : path.join(process.cwd(), 'src', 'routes');
+  const rootPagePath = isSvelte ? path.join(rootRouteDir, 'App.svelte') : path.join(rootRouteDir, '+page.svelte');
+  const rootPageUpdate = isSvelte ?  \`import ArcGIS from './lib/ArcGIS.svelte';\` : \`<p>Visit the <a href="arcgis">arcgis demo page</a> and view console.log output</p>\`;
+
   // Read existing root page content and append the demo link
-  if (fs.existsSync(rootPagePath)) {
+  if (fs.existsSync(rootPagePath) && isSvelteKit) {
     const existingContent = fs.readFileSync(rootPagePath, 'utf8');
     if (!existingContent.includes('arcgis demo page')) {
       const updatedContent = existingContent + \`\n\` + rootPageUpdate;
       fs.writeFileSync(rootPagePath, updatedContent);
     }
     console.log(\`✅ Updated homepage with demo link\`);
+  }
+
+  if (fs.existsSync(rootPagePath) && isSvelte) {
+    const existingContent = fs.readFileSync(rootPagePath, 'utf8');
+    if (!existingContent.includes('ArcGIS.svelte')) {
+      const scriptTagRegex = /(<script[^>]*>)/;
+      const match = existingContent.match(scriptTagRegex);
+      if (match) {
+        const insertionPoint = match.index + match[0].length;
+        const updatedContent =
+          existingContent.slice(0, insertionPoint) + rootPageUpdate + existingContent.slice(insertionPoint);
+        fs.writeFileSync(rootPagePath, updatedContent);
+      }
+      
+      console.log('nice');
+    }
   }
 }
 
@@ -669,7 +880,8 @@ console.log("✅ Created .config/init-sv-arcgis.js");
 
 // Add script
 if (!packageJson.scripts) packageJson.scripts = {};
-packageJson.scripts.config = 'SUPPRESS_NO_CONFIG_WARNING=true node ./.config/init-sv-arcgis.js';
+packageJson.scripts.config =
+  "SUPPRESS_NO_CONFIG_WARNING=true node ./.config/init-sv-arcgis.js";
 
 // Write back to package.json
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
@@ -678,12 +890,19 @@ fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 console.log("📦 Installing required dependencies...");
 
 try {
-  if (packageManager === 'pnpm') {
-    execSync('pnpm add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
-  } else if (packageManager === 'yarn') {
-    execSync('yarn add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
+  if (packageManager === "pnpm") {
+    execSync("pnpm add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0", {
+      stdio: "inherit",
+    });
+  } else if (packageManager === "yarn") {
+    execSync("yarn add -D chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0", {
+      stdio: "inherit",
+    });
   } else {
-    execSync('npm install --save-dev chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0', { stdio: 'inherit' });
+    execSync(
+      "npm install --save-dev chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0",
+      { stdio: "inherit" }
+    );
   }
   console.log("✅ Dependencies installed successfully");
 } catch (error) {
@@ -695,9 +914,9 @@ console.log("✅ Added config script to package.json");
 console.log("");
 
 console.log("🚀 Now run:");
-if (packageManager === 'pnpm') {
+if (packageManager === "pnpm") {
   console.log("   `pnpm run config`");
-} else if (packageManager === 'yarn') {
+} else if (packageManager === "yarn") {
   console.log("   `yarn run config`");
 } else {
   console.log("   `npm run config`");
