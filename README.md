@@ -1,3 +1,8 @@
+## 🎬 Repo / NPM
+
+- [repo](https://github.com/joe-allen/sv-arcgis)
+- [npm](https://www.npmjs.com/package/sv-arcgis)
+
 ## 🎬 Prereqs
 
 - SvelteKit: `npx sv create [project_name]`
