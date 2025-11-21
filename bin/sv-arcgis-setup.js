@@ -377,12 +377,12 @@ if (initPromises.length > 0) {
 if (demo.DEMO === true) {
   let arcgisRouteDir;
   if (isSvelte) {
-    // console.log("📦 Svelte DEMO...");
+    // console.log("✅ Created demo in './src/'.");
     // Create directory called 'arcgis' in './src/'
 
     arcgisRouteDir = path.join(process.cwd(), 'src', 'lib');
   } else if (isSvelteKit) {
-    console.log("📦 SvelteKit DEMO...");
+    // console.log("✅ Created demo in './src/routes/'.");
     // Create directory called 'arcgis' in './src/routes/'
 
     arcgisRouteDir = path.join(process.cwd(), 'src', 'routes', 'arcgis');
@@ -502,7 +502,6 @@ if (demo.DEMO === true) {
         flex-direction: column;
         gap: 2rem;
         width: 50vmax;
-        height: 100vh;
         margin-inline: auto;
         margin: 0;
         padding: 0;
@@ -676,7 +675,6 @@ if (demo.DEMO === true) {
         flex-direction: column;
         gap: 2rem;
         width: 50vmax;
-        height: 100vh;
         margin-inline: auto;
         margin: 0;
         padding: 0;
@@ -840,7 +838,7 @@ generateConfig()
         fs.writeFileSync(configFilePath, configFileText, { encoding: 'utf8', flag: 'w' });
 
         // Show that config was written
-        console.log(\`✅ Updated \` + chalk.bold(\`/src/lib/config/index.\${usesTypeScript ? 'ts' : 'js'}\`));
+        console.log(\`✅ Updated config at \` + chalk.bold(\`/src/lib/config/index.\${usesTypeScript ? 'ts' : 'js'}\`));
       }
 
       if (!global.arcGisApiKeyIsNull || !global.arcGisClientIdIsNull || !global.arcGisClientSecretIsNull) {
@@ -849,7 +847,7 @@ generateConfig()
         fs.writeFileSync(envFilePath, envFileText, { encoding: 'utf8', flag: 'w' });
 
         // Show that env was written
-        console.log(\`✅ Updated \` + chalk.bold(\`.env\`));
+        console.log(\`✅ Updated env file at \` + chalk.bold(\`.env\`));
         console.log(\`👀 Tip: Make sure your .gitignore has the line: .env\`);
       }
 
