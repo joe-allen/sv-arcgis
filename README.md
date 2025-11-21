@@ -47,11 +47,11 @@ Here are the prompts that are asked when running the tool (all are optional):
 
 ## 🗺️ Roadmap
 
+- [ ] Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
+- [ ] Add prompt for ArcGIS Charts / Code components?
 - [ ] Create CI / CD (w/ tests)
 - [ ] Create tests (see https://www.youtube.com/watch?v=Xk8yaN9_PZA)
-- [ ] Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
 - [ ] When selecting demo for Svelte (vite) currently we're only importing the component. Update the script to drop `<ArcGIS />` something in the html
-- [ ] Add prompt for ArcGIS Charts / Code components?
 - [x] Update to work Svelte / Vite app (not just Kit)? (Demo would need to be different)
 
 ## 🙏 Help
