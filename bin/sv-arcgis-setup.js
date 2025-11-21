@@ -749,7 +749,7 @@ if (demo.DEMO === true) {
 
   fs.writeFileSync(demoPagePath, demoPageContent);
   if (isSvelte) {
-    console.log(\`✅ Created demo page at ./src/lib/arcgis/ArcGIS.svelte\`);
+    console.log(\`✅ Created demo page at ./src/lib/ArcGIS.svelte\`);
   } else {
     console.log(\`✅ Created demo page at ./src/routes/arcgis/+page.svelte\`);
   }

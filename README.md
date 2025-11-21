@@ -1,3 +1,29 @@
+## ❓ What does this do?
+
+It's an ~opinionated way to setup a Svelte or SvelteKit and ArcGIS project. It'll give you everything you need to get going quickly and will set default locations for things like config.js|ts and your .env file.
+
+Here are the prompts that are asked when running the tool (all are optional):
+
+**(config)**
+
+- Enter your appName
+- Enter your baseUrl (e.g. /)
+- Enter your Portal URL
+- Enter your webmapId
+- Enter your appId
+
+**(env)**
+
+- Enter your ArcGIS API key
+- Enter your ArcGIS Client ID
+- Enter your ArcGIS Client Secret
+
+**(ui)**
+
+- Do you need the Security Classification bars above and below on the UI?
+- Do you want to use Calcite Components?
+- Would you like a demo page?
+
 ## 🎬 Repo / NPM
 
 - [repo](https://github.com/joe-allen/sv-arcgis)
@@ -21,9 +47,11 @@
 
 ## 🗺️ Roadmap
 
-- Create CI / CD (w/ tests)
-- Create tests (see https://www.youtube.com/watch?v=Xk8yaN9_PZA)
-- Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
+- [ ] Create CI / CD (w/ tests)
+- [ ] Create tests (see https://www.youtube.com/watch?v=Xk8yaN9_PZA)
+- [ ] Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
+- [ ] When selecting demo for Svelte (vite) currently we're only importing the component. Update the script to drop `<ArcGIS />` something in the html
+- [ ] Add prompt for ArcGIS Charts / Code components?
 - [x] Update to work Svelte / Vite app (not just Kit)? (Demo would need to be different)
 
 ## 🙏 Help
