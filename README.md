@@ -3,7 +3,7 @@
 - [repo](https://github.com/joe-allen/sv-arcgis)
 - [npm](https://www.npmjs.com/package/sv-arcgis)
 
-## 🎬 Prereqs
+## 📋 Prereqs
 
 - SvelteKit: `npx sv create [project_name]`
 - (Or Svelte: `npm create vite@latest`)

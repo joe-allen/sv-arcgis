@@ -838,7 +838,7 @@ generateConfig()
         fs.writeFileSync(configFilePath, configFileText, { encoding: 'utf8', flag: 'w' });
 
         // Show that config was written
-        console.log(\`✅ Updated config at \` + chalk.bold(\`/src/lib/config/index.\${usesTypeScript ? 'ts' : 'js'}\`));
+        console.log(\`✅ Updated config at \` + chalk.bold(\`./src/lib/config/index.\${usesTypeScript ? 'ts' : 'js'}\`));
       }
 
       if (!global.arcGisApiKeyIsNull || !global.arcGisClientIdIsNull || !global.arcGisClientSecretIsNull) {
@@ -847,7 +847,7 @@ generateConfig()
         fs.writeFileSync(envFilePath, envFileText, { encoding: 'utf8', flag: 'w' });
 
         // Show that env was written
-        console.log(\`✅ Updated env file at \` + chalk.bold(\`.env\`));
+        console.log(\`✅ Updated env file at \` + chalk.bold(\`./.env\`));
         console.log(\`👀 Tip: Make sure your .gitignore has the line: .env\`);
       }
 
