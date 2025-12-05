@@ -6,6 +6,7 @@ Here are the prompts that are asked when running the tool (all are optional):
 
 **(config)**
 
+- Enter your environment
 - Enter your appName
 - Enter your baseUrl (e.g. /)
 - Enter your Portal URL
@@ -49,6 +50,7 @@ Here are the prompts that are asked when running the tool (all are optional):
 
 - [ ] Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
 - [ ] Add prompt for ArcGIS Charts / Code components?
+- [ ] Toggle for calcite-mode-light/dark?
 - [ ] Create CI / CD (w/ tests)
 - [ ] Create tests (see https://www.youtube.com/watch?v=Xk8yaN9_PZA)
 - [ ] When selecting demo for Svelte (vite) currently we're only importing the component. Update the script to drop `<ArcGIS />` something in the html

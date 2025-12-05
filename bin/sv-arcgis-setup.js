@@ -24,14 +24,14 @@ if (hasPnpmLock) {
 }
 
 // Create config directory
-const configDirectory = path.join(process.cwd(), ".config");
+const configDirectory = path.join(process.cwd(), ".sv-arcgis");
 if (!fs.existsSync(configDirectory)) {
   fs.mkdirSync(configDirectory, { recursive: true });
-  // console.log("✅ Created .config directory");
+  // console.log("✅ Created .sv-arcgis directory");
 }
 
-// Create init-sv-arcgis.js file
-const initConfigPath = path.join(configDirectory, "init-sv-arcgis.js");
+// Create sv-arcgis.js file
+const initConfigPath = path.join(configDirectory, "sv-arcgis.js");
 const initConfigContent = `#!/usr/bin/env node
 
 import fs from 'fs';
@@ -49,16 +49,15 @@ let configPath;
 let envPath;
 let envExamplePath;
 
-
 // Write to ./src/lib/config/index.js
 // Prompts user for:
-// PORTAL_URL
-// WEBMAP_ID
-// APP_ID
-// BASE
-// APP_NAME
-// SECURITY_CLASSIFICATION
-// CALCITE
+// portalUrl
+// appId
+// webmapId
+// base
+// appName
+// securityClassification
+// calcite
 // API_KEY
 // CLIENT_ID
 // CLIENT_SECRET
@@ -80,51 +79,30 @@ async function generateConfig() {
     process.exit(1);
   }
 
-// const environment = await prompts([
-//   {
-//     type: 'select',
-//     name: 'ENVIRONMENT',
-//     message: 'What environment do you want to setup?',
-//     choices: [
-//       { title: 'development', value: 'development' },
-//       { title: 'staging', value: 'staging' },
-//       { title: 'production', value: 'production' },
-//     ],
-//     validate: value => {
-//       global.environment = value;
-//       return true;
-//     }
-//   }
-// ], { onCancel });
-// console.log("");
+  // Check if env specific config file already exists
+  configPath = path.join(process.cwd(), usesTypeScript ? './src/lib/config/index.ts' : './src/lib/config/index.js');
+  envPath = path.join(process.cwd(), \`.env\`);
+  envExamplePath = path.join(process.cwd(), \`.env.example\`);
 
-// Set env
-// global.env = environment.ENVIRONMENT;
+  // Warn if exists
+  if (fs.existsSync(configPath) || fs.existsSync(envPath)) {
 
-// Check if env specific config file already exists
-configPath = path.join(process.cwd(), usesTypeScript ? './src/lib/config/index.ts' : './src/lib/config/index.js');
-envPath = path.join(process.cwd(), \`.env\`);
-envExamplePath = path.join(process.cwd(), \`.env.example\`);
+    console.log("⚠️  Warning");
+    console.log("");
 
-// Warn if exists
-if (fs.existsSync(configPath) || fs.existsSync(envPath)) {
+    const { overwrite } = await prompts({
+      type: 'confirm',
+      name: 'overwrite',
+      message: 'Config and / or .env file already exist. Overwrite?',
+      initial: false
+    });
 
-  console.log("⚠️  Warning");
-  console.log("");
-
-  const { overwrite } = await prompts({
-    type: 'confirm',
-    name: 'overwrite',
-    message: 'Config and / or .env file already exist. Overwrite?',
-    initial: false
-  });
-
-  // Show cancelled msg
-  if (!overwrite) {
-    console.log("Setup canceled. Existing configuration preserved.");
-    return;
+    // Show cancelled msg
+    if (!overwrite) {
+      console.log("Setup canceled. Existing configuration preserved.");
+      return;
+    }
   }
-}
 
 // Start config!
 console.log("");
@@ -134,10 +112,31 @@ console.log("");
 // Use package.json version, else...
 const VERSION = { version } ? version : '0.1.0';
 
+const environment = await prompts([
+  {
+    type: 'select',
+    name: 'environment',
+    message: 'What environment do you want to setup?',
+    choices: [
+      { title: 'development', value: 'development' },
+      { title: 'staging', value: 'staging' },
+      { title: 'production', value: 'production' },
+    ],
+    validate: value => {
+      global.environment = \`/process.env.NODE_ENV || \${value}\`;
+      return true;
+    }
+  }
+], { onCancel });
+console.log("");
+
+// Set env
+global.env = environment.environment;
+
 const appName = await prompts([
   {
     type: 'text',
-    name: 'APP_NAME',
+    name: 'appName',
     message: 'Enter your appName',
     validate: value => {
       global.appNameIsNull = value.length === 0;
@@ -150,7 +149,7 @@ console.log("");
 const base = await prompts([
   {
     type: 'text',
-    name: 'BASE',
+    name: 'base',
     message: 'Enter your baseUrl (e.g. /)',
     validate: value => {
       global.baseIsNull = value.length === 0;
@@ -160,8 +159,8 @@ const base = await prompts([
   },
   {
     type: () => global.baseIsNull ? 'text' : null,
-    name: 'BASE',
-    message: 'BASE_URL is required. It will default to "/"',
+    name: 'base',
+    message: 'base_URL is required. It will default to "/"',
     initial: '/',
     format: value => value.startsWith('/') ? value : \`/\${value}\`
   }
@@ -171,7 +170,7 @@ console.log("");
 const portalUrl = await prompts([
   {
     type: 'text',
-    name: 'PORTAL_URL',
+    name: 'portalUrl',
     message: 'Enter your Portal URL',
     validate: value => {
       global.portalUrlIsNull = value.length === 0;
@@ -180,22 +179,9 @@ const portalUrl = await prompts([
   },
   {
     // type: () => global.portalUrlIsNull ? 'text' : null,
-    // name: 'PORTAL_URL',
+    // name: 'portalUrl',
     // message: 'portalUrl is required. If proceeding it\'ll be set to: ',
     // initial: 'https://prof-services.maps.arcgis.com/',
-  }
-], { onCancel });
-console.log("");
-
-const webmapId = await prompts([
-  {
-    type: 'text',
-    name: 'WEBMAP_ID',
-    message: 'Enter your webmapId',
-    validate: value => {
-      global.webmapIdIsNull = value.length === 0;
-      return true;
-    }
   }
 ], { onCancel });
 console.log("");
@@ -203,10 +189,23 @@ console.log("");
 const appId = await prompts([
   {
     type: 'text',
-    name: 'APP_ID',
+    name: 'appId',
     message: 'Enter your appId',
     validate: value => {
       global.appIdIsNull = value.length === 0;
+      return true;
+    }
+  }
+], { onCancel });
+console.log("");
+
+const webmapId = await prompts([
+  {
+    type: 'text',
+    name: 'webmapId',
+    message: 'Enter your webmapId',
+    validate: value => {
+      global.webmapIdIsNull = value.length === 0;
       return true;
     }
   }
@@ -255,7 +254,7 @@ console.log("");
 const securityClassification = await prompts([
   {
     type: 'select',
-    name: 'SECURITY_CLASSIFICATION',
+    name: 'securityClassification',
     message: 'Do you need the Security Classification bars above and below on the UI?',
     choices: [
       { title: 'None', value: false },
@@ -274,7 +273,7 @@ const securityClassification = await prompts([
   },
   {
     type: () => global.securityClassificationIsNull ? 'text' : null,
-    name: 'SECURITY_CLASSIFICATION',
+    name: 'securityClassification',
     initial: false,
   }
 ], { onCancel });
@@ -283,7 +282,7 @@ console.log("");
 const calcite = await prompts([
   {
     type: 'select',
-    name: 'CALCITE',
+    name: 'calcite',
     message: 'Do you want to use Calcite Components?',
     choices: [
       { title: 'Yes', value: true },
@@ -329,11 +328,11 @@ if (hasPnpmLock) {
 // Install packages with loader
 const initPromises = [];
 
-if (calcite.CALCITE === true) {
+if (calcite.calcite === true) {
   console.log("📦 Installing ArcGIS Core, Map Components, and Calcite Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.33.14 @arcgis/map-components@4.33.24 @esri/calcite-components@3.3.3\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@4.34.8 @arcgis/map-components@4.34.9 @esri/calcite-components@3.3.3\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -347,7 +346,7 @@ if (calcite.CALCITE === true) {
  console.log("📦 Installing ArcGIS Core and Map Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.33.14 @arcgis/map-components@4.33.24\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@4.34.8 @arcgis/map-components@4.34.9\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -419,7 +418,7 @@ if (demo.DEMO === true) {
         import("@arcgis/map-components/dist/loader").then(
           ({ defineCustomElements }) => {
             defineCustomElements(window, {
-              resourcesUrl: "https://js.arcgis.com/map-components/4.33.24/assets",
+              resourcesUrl: "https://js.arcgis.com/map-components/4.34.8/assets",
             });
           }
         );
@@ -431,11 +430,11 @@ if (demo.DEMO === true) {
     </svelte:head>
 
     <main class="e-demo">
-      {#if config.SECURITY_CLASSIFICATION}
+      {#if config.securityClassification}
         <div
-          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+          class="e-demo-security-bar e-demo-security-bar--{config.securityClassification}"
         >
-          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+          Security Classification: {config.securityClassification.toUpperCase()}
         </div>
       {/if}
       <div class="e-demo-container">
@@ -446,30 +445,31 @@ if (demo.DEMO === true) {
           <arcgis-map item-id="05e015c5f0314db9a487a9b46cb37eca">
             <arcgis-zoom position="top-left"></arcgis-zoom>
           </arcgis-map>
-          {#if config.CALCITE}
-            <calcite-button href="/" appearance="solid" scale="m">
-              Go Home
+          {#if config.calcite}
+            <calcite-button appearance="solid" scale="m" type="button" onclick={() => {document.body.classList.toggle('calcite-mode-dark')}}>
+              Toggle Theme
             </calcite-button>
           {/if}
         </div>
       </div>
-      {#if config.SECURITY_CLASSIFICATION}
+      {#if config.securityClassification}
         <div
-          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+          class="e-demo-security-bar e-demo-security-bar--{config.securityClassification}"
         >
-          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+          Security Classification: {config.securityClassification.toUpperCase()}
         </div>
       {/if}
     </main>
 
     <style>
-      @import "https://js.arcgis.com/4.33/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
-
       :global(body:has(.e-demo)) {
         margin: 0;
         padding: 0;
         height: 100%;
         width: 100%;
+      }
+
+      :global(body.calcite-mode-dark) {
         background: #212121;
       }
 
@@ -593,7 +593,7 @@ if (demo.DEMO === true) {
       import("@arcgis/map-components/dist/loader").then(
         ({ defineCustomElements }) => {
           defineCustomElements(window, {
-            resourcesUrl: "https://js.arcgis.com/map-components/4.33.24/assets",
+            resourcesUrl: "https://js.arcgis.com/map-components/4.34.8/assets",
           });
         }
       );
@@ -604,11 +604,11 @@ if (demo.DEMO === true) {
     </svelte:head>
   
     <main class="e-demo">
-      {#if config.SECURITY_CLASSIFICATION}
+      {#if config.securityClassification}
         <div
-          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+          class="e-demo-security-bar e-demo-security-bar--{config.securityClassification}"
         >
-          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+          Security Classification: {config.securityClassification.toUpperCase()}
         </div>
       {/if}
       <div class="e-demo-container">
@@ -619,30 +619,32 @@ if (demo.DEMO === true) {
           <arcgis-map item-id="05e015c5f0314db9a487a9b46cb37eca">
             <arcgis-zoom position="top-left"></arcgis-zoom>
           </arcgis-map>
-          {#if config.CALCITE}
-            <calcite-button href="/" appearance="solid" scale="m">
-              Go Home
+          {#if config.calcite}
+            <calcite-button appearance="solid" scale="m" type="button" onclick={() => {document.body.classList.toggle('calcite-mode-dark')}}>
+              Toggle Theme
             </calcite-button>
           {/if}
         </div>
       </div>
-      {#if config.SECURITY_CLASSIFICATION}
+      {#if config.securityClassification}
         <div
-          class="e-demo-security-bar e-demo-security-bar--{config.SECURITY_CLASSIFICATION}"
+          class="e-demo-security-bar e-demo-security-bar--{config.securityClassification}"
         >
-          Security Classification: {config.SECURITY_CLASSIFICATION.toUpperCase()}
+          Security Classification: {config.securityClassification.toUpperCase()}
         </div>
       {/if}
     </main>
   
     <style>
-      @import "https://js.arcgis.com/4.33/@arcgis/core/assets/esri/themes/dark/main.css";\${calcite.CALCITE ? '\\n    @import "@esri/calcite-components/dist/calcite/calcite.css";' : ''}
-  
+
       :global(body:has(.e-demo)) {
         margin: 0;
         padding: 0;
         height: 100%;
         width: 100%;
+      }
+
+      :global(body.calcite-mode-dark) {
         background: #212121;
       }
   
@@ -772,27 +774,41 @@ if (demo.DEMO === true) {
   if (fs.existsSync(rootPagePath) && isSvelte) {
     const existingContent = fs.readFileSync(rootPagePath, 'utf8');
     if (!existingContent.includes('ArcGIS.svelte')) {
+      // First, add the import statement inside the <script> tag
       const scriptTagRegex = /(<script[^>]*>)/;
       const match = existingContent.match(scriptTagRegex);
+      let updatedContent = existingContent;
+      
       if (match) {
         const insertionPoint = match.index + match[0].length;
-        const updatedContent =
-          existingContent.slice(0, insertionPoint) + rootPageUpdate + existingContent.slice(insertionPoint);
-        fs.writeFileSync(rootPagePath, updatedContent);
+        updatedContent = existingContent.slice(0, insertionPoint) + rootPageUpdate + existingContent.slice(insertionPoint);
+      }
+
+      // Then, insert <ArcGIS /> component just after the closing </script> tag
+      const closingScriptTagRegex = /(<\\/script>)/;
+      const closingMatch = updatedContent.match(closingScriptTagRegex);
+      
+      if (closingMatch) {
+        const componentInsertionPoint = closingMatch.index + closingMatch[0].length;
+        updatedContent = updatedContent.slice(0, componentInsertionPoint) + \`\n\n<ArcGIS />\` + updatedContent.slice(componentInsertionPoint);
       }
       
-      console.log('nice');
+      fs.writeFileSync(rootPagePath, updatedContent);
+      console.log(\`✅ Updated App.svelte with ArcGIS component\`);
     }
   }
 }
 
 const config = {
-  VERSION,
+  version: VERSION,
+  environment: environment.environment,
   ...appName,
   ...base,
-  ...portalUrl,
-  ...webmapId,
-  ...appId,
+  portal: {
+    appId: appId.appId,
+    webmapId: webmapId.webmapId,
+    url: portalUrl.portalUrl
+  },
   ...securityClassification,
   ...calcite
 }
@@ -834,7 +850,52 @@ generateConfig()
         const configFilePath = usesTypeScript ? './src/lib/config/index.ts' : './src/lib/config/index.js';
 
         // Create and write to config file
-        const configFileText = \`export default \${JSON.stringify(data.config, null, 2)}\`;
+        const configFileText = usesTypeScript ? \`interface PortalConfiguration {
+  appId: string;
+  webmapId: string;
+  url: string;
+}
+
+interface StaticConfiguration {
+  version: string;
+  environment: string;
+  appName: string;
+  base: string;
+  portal: PortalConfiguration;
+  securityClassification: boolean | string;
+  calcite: boolean;
+}
+    
+export const config: StaticConfiguration = {
+  version: "\${data.config.version}",
+  environment: process.env.NODE_ENV || "\${data.config.environment}",
+  appName: "\${data.config.appName}",
+  base: "\${data.config.base}",
+  portal: {
+    appId: "\${data.config.portal.appId}",
+    webmapId: "\${data.config.portal.webmapId}",
+    url: "\${data.config.portal.url}",
+  },
+  securityClassification: \${typeof data.config.securityClassification === 'string' ? \`"\${data.config.securityClassification}"\` : data.config.securityClassification},
+  calcite: \${data.config.calcite},
+};
+
+export default config;\` : \`export const config = {
+  version: "\${data.config.version}",
+  environment: process.env.NODE_ENV || "\${data.config.environment}",
+  appName: "\${data.config.appName}",
+  base: "\${data.config.base}",
+  portal: {
+    appId: "\${data.config.portal.appId}",
+    webmapId: "\${data.config.portal.webmapId}",
+    url: "\${data.config.portal.url}",
+  },
+  securityClassification: \${typeof data.config.securityClassification === 'string' ? \`"\${data.config.securityClassification}"\` : data.config.securityClassification},
+  calcite: \${data.config.calcite},
+};
+
+export default config;\`;
+        
         fs.writeFileSync(configFilePath, configFileText, { encoding: 'utf8', flag: 'w' });
 
         // Show that config was written
@@ -874,12 +935,12 @@ generateConfig()
 `;
 
 fs.writeFileSync(initConfigPath, initConfigContent);
-console.log("✅ Created .config/init-sv-arcgis.js");
+console.log("✅ Created .sv-arcgis/sv-arcgis.js");
 
 // Add script
 if (!packageJson.scripts) packageJson.scripts = {};
 packageJson.scripts.config =
-  "SUPPRESS_NO_CONFIG_WARNING=true node ./.config/init-sv-arcgis.js";
+  "SUPPRESS_NO_CONFIG_WARNING=true node ./.sv-arcgis/sv-arcgis.js";
 
 // Write back to package.json
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
