@@ -406,12 +406,12 @@ if (demo.DEMO === true) {
       import { env } from "$env/dynamic/public";
 
       // variables
-      let mapWrap: HTMLDivElement | null = $state(null);
+      let mapView: HTMLArcgisMapElement | null = $state(null);
 
       onMount(() => {
         console.log("env", env);
         console.log("config", config);
-        console.log("mapWrap", mapWrap);
+        console.log("mapView", mapView);
       });
 
       if (browser) {
@@ -441,8 +441,8 @@ if (demo.DEMO === true) {
         <div class="e-demo-header">
           <h1>🗺️ SV + ArcGIS Demo</h1>
         </div>
-        <div class="e-demo-map-wrap" bind:this={mapWrap}>
-          <arcgis-map item-id="05e015c5f0314db9a487a9b46cb37eca">
+        <div class="e-demo-map-wrap">
+          <arcgis-map bind:this={mapView} item-id="05e015c5f0314db9a487a9b46cb37eca">
             <arcgis-zoom position="top-left"></arcgis-zoom>
           </arcgis-map>
           {#if config.calcite}
@@ -471,6 +471,10 @@ if (demo.DEMO === true) {
 
       :global(body.calcite-mode-dark) {
         background: #212121;
+
+        & .e-demo-header {
+          color: #fff;
+        }
       }
 
       .e-demo {
@@ -583,11 +587,11 @@ if (demo.DEMO === true) {
       import { onMount } from "svelte";
   
       // variables
-      let mapWrap = $state(null);
+      let mapView = $state(null);
   
       onMount(() => {
         console.log("config", config);
-        console.log("mapWrap", mapWrap);
+        console.log("mapView", mapView);
       });
       
       import("@arcgis/map-components/dist/loader").then(
@@ -615,8 +619,8 @@ if (demo.DEMO === true) {
         <div class="e-demo-header">
           <h1>🗺️ SV + ArcGIS Demo</h1>
         </div>
-        <div class="e-demo-map-wrap" bind:this={mapWrap}>
-          <arcgis-map item-id="05e015c5f0314db9a487a9b46cb37eca">
+        <div class="e-demo-map-wrap">
+          <arcgis-map bind:this={mapView} item-id="05e015c5f0314db9a487a9b46cb37eca">
             <arcgis-zoom position="top-left"></arcgis-zoom>
           </arcgis-map>
           {#if config.calcite}
@@ -636,7 +640,6 @@ if (demo.DEMO === true) {
     </main>
   
     <style>
-
       :global(body:has(.e-demo)) {
         margin: 0;
         padding: 0;
@@ -646,6 +649,10 @@ if (demo.DEMO === true) {
 
       :global(body.calcite-mode-dark) {
         background: #212121;
+
+        & .e-demo-header {
+          color: #fff;
+        }
       }
   
       .e-demo {
@@ -960,7 +967,7 @@ try {
   } else {
     execSync(
       "npm install --save-dev chalk@5.4.1 prompts@2.4.2 cross-env@10.0.0",
-      { stdio: "inherit" }
+      { stdio: "inherit" },
     );
   }
   console.log("✅ Dependencies installed successfully");
