@@ -52,7 +52,6 @@ let envExamplePath;
 // Write to ./src/lib/config/index.js
 // Prompts user for:
 // portalUrl
-// appId
 // webmapId
 // base
 // appName
@@ -150,7 +149,7 @@ const base = await prompts([
   {
     type: 'text',
     name: 'base',
-    message: 'Enter your baseUrl (e.g. /)',
+    message: 'Enter your base URL (e.g. /)',
     validate: value => {
       global.baseIsNull = value.length === 0;
       return true;
@@ -160,7 +159,7 @@ const base = await prompts([
   {
     type: () => global.baseIsNull ? 'text' : null,
     name: 'base',
-    message: 'base_URL is required. It will default to "/"',
+    message: 'Base URL is required. Otherwise, it defaults to "/"',
     initial: '/',
     format: value => value.startsWith('/') ? value : \`/\${value}\`
   }
@@ -178,23 +177,10 @@ const portalUrl = await prompts([
     }
   },
   {
-    // type: () => global.portalUrlIsNull ? 'text' : null,
-    // name: 'portalUrl',
-    // message: 'portalUrl is required. If proceeding it\'ll be set to: ',
-    // initial: 'https://prof-services.maps.arcgis.com/',
-  }
-], { onCancel });
-console.log("");
-
-const appId = await prompts([
-  {
-    type: 'text',
-    name: 'appId',
-    message: 'Enter your appId',
-    validate: value => {
-      global.appIdIsNull = value.length === 0;
-      return true;
-    }
+    type: () => global.portalUrlIsNull ? 'text' : null,
+    name: 'portalUrl',
+    message: 'Portal URL is required. Otherwise, it defaults to "arcgis.com"',
+    initial: 'https://www.arcgis.com',
   }
 ], { onCancel });
 console.log("");
@@ -417,9 +403,7 @@ if (demo.DEMO === true) {
       if (browser) {
         import("@arcgis/map-components/dist/loader").then(
           ({ defineCustomElements }) => {
-            defineCustomElements(window, {
-              resourcesUrl: "https://js.arcgis.com/map-components/4.34.8/assets",
-            });
+            defineCustomElements(window);
           }
         );
       }
@@ -439,11 +423,15 @@ if (demo.DEMO === true) {
       {/if}
       <div class="e-demo-container">
         <div class="e-demo-header">
-          <h1>🗺️ SV + ArcGIS Demo</h1>
+          {#if config.appName}
+            {config.appName}
+          {:else}
+            <h1>🗺️ SV-ArcGIS Demo</h1>
+          {/if}
         </div>
         <div class="e-demo-map-wrap">
-          <arcgis-map bind:this={mapView} item-id="05e015c5f0314db9a487a9b46cb37eca">
-            <arcgis-zoom position="top-left"></arcgis-zoom>
+          <arcgis-map bind:this={mapView} item-id={config.portal.webmapId ? config.portal.webmapId : "05e015c5f0314db9a487a9b46cb37eca"}>
+            <arcgis-zoom slot="top-left"></arcgis-zoom>
           </arcgis-map>
           {#if config.calcite}
             <calcite-button appearance="solid" scale="m" type="button" onclick={() => {document.body.classList.toggle('calcite-mode-dark')}}>
@@ -491,7 +479,7 @@ if (demo.DEMO === true) {
 
       .e-demo-header {
         padding: 1rem;
-        color: #f1f1f1;
+        color: #212121;
 
         translate: 0 0;
         transition: translate 1s ease-out;
@@ -534,7 +522,7 @@ if (demo.DEMO === true) {
         align-items: center;
         justify-content: center;
         inset-block-start: 0;
-        height: 22px;
+        height: 24px;
         background-color: #000;
         color: #fff;
         margin: 0;
@@ -596,9 +584,7 @@ if (demo.DEMO === true) {
       
       import("@arcgis/map-components/dist/loader").then(
         ({ defineCustomElements }) => {
-          defineCustomElements(window, {
-            resourcesUrl: "https://js.arcgis.com/map-components/4.34.8/assets",
-          });
+          defineCustomElements(window);
         }
       );
     </script>
@@ -617,11 +603,15 @@ if (demo.DEMO === true) {
       {/if}
       <div class="e-demo-container">
         <div class="e-demo-header">
-          <h1>🗺️ SV + ArcGIS Demo</h1>
+          {#if config.appName}
+            {config.appName}
+          {:else}
+            <h1>🗺️ SV-ArcGIS Demo</h1>
+          {/if}
         </div>
         <div class="e-demo-map-wrap">
-          <arcgis-map bind:this={mapView} item-id="05e015c5f0314db9a487a9b46cb37eca">
-            <arcgis-zoom position="top-left"></arcgis-zoom>
+          <arcgis-map bind:this={mapView} item-id={config.portal.webmapId ? config.portal.webmapId : "05e015c5f0314db9a487a9b46cb37eca"}>
+            <arcgis-zoom slot="top-left"></arcgis-zoom>
           </arcgis-map>
           {#if config.calcite}
             <calcite-button appearance="solid" scale="m" type="button" onclick={() => {document.body.classList.toggle('calcite-mode-dark')}}>
@@ -669,7 +659,7 @@ if (demo.DEMO === true) {
   
       .e-demo-header {
         padding: 1rem;
-        color: #f1f1f1;
+        color: #212121;
   
         translate: 0 0;
         transition: translate 1s ease-out;
@@ -712,7 +702,7 @@ if (demo.DEMO === true) {
         align-items: center;
         justify-content: center;
         inset-block-start: 0;
-        height: 22px;
+        height: 24px;
         background-color: #000;
         color: #fff;
         margin: 0;
@@ -812,7 +802,6 @@ const config = {
   ...appName,
   ...base,
   portal: {
-    appId: appId.appId,
     webmapId: webmapId.webmapId,
     url: portalUrl.portalUrl
   },
@@ -858,7 +847,6 @@ generateConfig()
 
         // Create and write to config file
         const configFileText = usesTypeScript ? \`interface PortalConfiguration {
-  appId: string;
   webmapId: string;
   url: string;
 }
@@ -879,7 +867,6 @@ export const config: StaticConfiguration = {
   appName: "\${data.config.appName}",
   base: "\${data.config.base}",
   portal: {
-    appId: "\${data.config.portal.appId}",
     webmapId: "\${data.config.portal.webmapId}",
     url: "\${data.config.portal.url}",
   },
@@ -893,7 +880,6 @@ export default config;\` : \`export const config = {
   appName: "\${data.config.appName}",
   base: "\${data.config.base}",
   portal: {
-    appId: "\${data.config.portal.appId}",
     webmapId: "\${data.config.portal.webmapId}",
     url: "\${data.config.portal.url}",
   },
