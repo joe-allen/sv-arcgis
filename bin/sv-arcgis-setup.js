@@ -318,7 +318,7 @@ if (calcite.calcite === true) {
   console.log("📦 Installing ArcGIS Core, Map Components, and Calcite Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.34.8 @arcgis/map-components@4.34.9 @esri/calcite-components@3.3.3\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@5.1.21 @arcgis/map-components@5.1.21 @esri/calcite-components@5.1.2\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -332,7 +332,7 @@ if (calcite.calcite === true) {
  console.log("📦 Installing ArcGIS Core and Map Components...");
   initPromises.push(
     new Promise((resolve, reject) => {
-      exec(\`\${packageManager} install @arcgis/core@4.34.8 @arcgis/map-components@4.34.9\`, (error, stdout, stderr) => {
+      exec(\`\${packageManager} install @arcgis/core@5.1.21 @arcgis/map-components@5.1.21\`, (error, stdout, stderr) => {
         if (error) {
           console.log('error:', chalk.white.bgRed(error.message));
           reject(error);
@@ -384,7 +384,7 @@ if (demo.DEMO === true) {
   if (isSvelteKit) {
     demoPageContent = \`<script lang="ts">
       // config
-      import config from "$lib/config";
+      import config from "../../lib/config";
 
       // sk
       import { onMount } from "svelte";
