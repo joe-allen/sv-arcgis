@@ -6,7 +6,8 @@
     "sv-arcgis": "./bin/sv-arcgis-setup.js"
   },
   "scripts": {
-    "semantic-release": "semantic-release"
+    "release": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run --plugins @semantic-release/commit-analyzer,@semantic-release/release-notes-generator"
   },
   "keywords": [
     "arcgis",

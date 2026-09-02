@@ -41,9 +41,21 @@ Here are the prompts that are asked when running the tool (all are optional):
 
 ## 📕 Notes
 
-- Using this will install _@arcgis/core@4.34.8_ and _@arcgis/map-components@4.34.9_. (Testing has not been done on later versions)
-- If you choose 'Yes' to Calcite, _@esri/calcite-components@3.3.3_ will be installed. (Testing has not been done on later versions)
+- Using this will install _@arcgis/core@5.1.21_ and _@arcgis/map-components@5.1.21_. (Testing has not been done on later versions)
+- If you choose 'Yes' to Calcite, _@esri/calcite-components@5.1.2_ will be installed. (Testing has not been done on later versions)
 - Using this will install the following devDepenencies: _chalk_, _prompts_ and _cross-env_
+
+## Maintainer releases
+
+Releases are managed by semantic-release in GitHub Actions. Push conventional commits to `main` for stable releases or `next` for prereleases:
+
+- `fix:` creates a patch release.
+- `feat:` creates a minor release.
+- A breaking change creates a major release.
+
+Before merging to `main`, run `npm run release:dry-run` and confirm the expected version. The GitHub repository must have an `NPM_TOKEN` Actions secret with permission to publish this package.
+
+During a release, semantic-release publishes to npm, creates the GitHub release, updates `CHANGELOG.md`, and commits matching versions in `package.json` and `package-lock.json`.
 
 ## 🗺️ Roadmap
 
