@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/joe-allen/sv-arcgis/compare/v1.6.1...v1.7.0) (2026-09-02)
+
+
+### Features
+
+* just triggering release ([f4810db](https://github.com/joe-allen/sv-arcgis/commit/f4810db702434ff0d17931325807410598de09d3))
+
 # [1.7.0-next.1](https://github.com/joe-allen/sv-arcgis/compare/v1.6.1-next.2...v1.7.0-next.1) (2026-09-02)
 
 

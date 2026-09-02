@@ -1,6 +1,6 @@
 {
   "name": "sv-arcgis",
-  "version": "1.7.0-next.1",
+  "version": "1.7.0",
   "main": "index.js",
   "bin": {
     "sv-arcgis": "./bin/sv-arcgis-setup.js"
