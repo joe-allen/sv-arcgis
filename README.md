@@ -61,7 +61,7 @@ During a release, semantic-release publishes to npm, creates the GitHub release,
 
 ### q3 2026
 
-- [/] Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
+- [ ] Option for / intergrate OAuth2 https://developers.arcgis.com/documentation/security-and-authentication/user-authentication/arcgis-apis/
 - [ ] Bun support
 
 ### q1 2027
