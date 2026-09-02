@@ -1,10 +1,9 @@
-## [1.6.1](https://github.com/joe-allen/sv-arcgis/compare/v1.6.0...v1.6.1) (2026-09-02)
+# [1.7.0-next.1](https://github.com/joe-allen/sv-arcgis/compare/v1.6.1-next.2...v1.7.0-next.1) (2026-09-02)
 
 
-### Bug Fixes
+### Features
 
-* bump version ([f92f416](https://github.com/joe-allen/sv-arcgis/commit/f92f416baa9128444078e0871ec3d8124986b2ab))
-* publishing setting in package.json ([b3edf32](https://github.com/joe-allen/sv-arcgis/commit/b3edf3290d8a6f6bf3bcc4619ca84d03643ea743))
+* just triggering release ([f4810db](https://github.com/joe-allen/sv-arcgis/commit/f4810db702434ff0d17931325807410598de09d3))
 
 ## [1.6.1-next.2](https://github.com/joe-allen/sv-arcgis/compare/v1.6.1-next.1...v1.6.1-next.2) (2026-09-02)
 
