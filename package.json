@@ -1,9 +1,13 @@
 {
   "name": "sv-arcgis",
-  "version": "1.6.0-next.1",
+  "version": "1.6.0",
   "main": "index.js",
   "bin": {
     "sv-arcgis": "./bin/sv-arcgis-setup.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "release": "semantic-release",
