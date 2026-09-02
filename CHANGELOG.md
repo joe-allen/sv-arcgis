@@ -1,3 +1,10 @@
+## [1.6.1-next.1](https://github.com/joe-allen/sv-arcgis/compare/v1.6.0...v1.6.1-next.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* publishing setting in package.json ([b3edf32](https://github.com/joe-allen/sv-arcgis/commit/b3edf3290d8a6f6bf3bcc4619ca84d03643ea743))
+
 # [1.6.0](https://github.com/joe-allen/sv-arcgis/compare/v1.5.0...v1.6.0) (2026-09-02)
 
 ### Features
